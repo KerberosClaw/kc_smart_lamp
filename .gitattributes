@@ -1,0 +1,13 @@
+* text=auto eol=lf
+
+# Lock files marked as generated for language detection
+uv.lock linguist-generated=true
+package-lock.json linguist-generated=true
+poetry.lock linguist-generated=true
+
+# Binary files
+*.stl binary
+*.3mf binary
+*.bin binary
+*.png binary
+*.jpg binary

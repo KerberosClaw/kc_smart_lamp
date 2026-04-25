@@ -1,0 +1,37 @@
+# macOS
+.DS_Store
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+*.egg-info/
+
+# PlatformIO
+.pio/
+.pioenvs/
+.piolibdeps/
+
+# OpenSCAD
+*.csg
+
+# Build outputs
+*.stl
+*.3mf
+*.gcode
+build/
+dist/
+
+# IDE
+.vscode/
+.idea/
+
+# Local config / credentials
+.env
+.env.local
+*.local
+
+# Logs
+*.log
