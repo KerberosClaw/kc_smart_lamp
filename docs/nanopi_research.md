@@ -27,7 +27,7 @@
 1. armel ARMv5 EABI — 很多 modern 套件、Docker、新版 Node.js 不支援
 2. 400MHz + 64MB RAM — 不要在板子編譯，一律 cross-compile
 3. Debian 8 EOL — APT 來源要改 archive.debian.org
-4. S3C2451 iROM bug — SD 卡不能 dd 直接寫 raw image，必須用官方 `sd-fuse_nanopi/fusing.sh`
+4. S3C2451 iROM boot layout 跟主流不同（**非 bug，是 mask ROM 寫死的 boot 規範，物理上無法更新**）— bootloader 必須出現在 SD 卡末端特定 sector，無法直接 dd 一般 Pi-style raw image。`sd-fuse_nanopi/fusing.sh` 知道這些 offset 用 dd 寫到對位置；做出來的 image 再 dd 到 SD 才能正確 boot。FriendlyARM 後續產品（NanoPi M1 / NEO / Air...）換 SoC 後已無此 layout 怪癖
 5. **M1 MBP 不支援 USB Gadget RNDIS**（HoRNDIS 只支援 Intel Mac）→ 第一次 SSH 必須改走 Linux 機器（見 Path A）或 Mac 上開 UTM Linux VM（見 Path B）
 
 ## 技術選擇 — 已決議方向
