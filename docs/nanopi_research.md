@@ -55,10 +55,9 @@
 ## Open Questions
 
 1. WiFi 還是 BLE 為主？（建議 WiFi REST，先簡單）
-2. 第一次 SSH 必須用 PC（M1 MBP RNDIS 不支援）— 流程怎麼定？SSH 進去設 WiFi 後就能切回 MBP 走 WiFi
-3. 封裝形式：3D 列印外殼？開模？還是用現成壓克力盒？
-4. LED 顆數：5 顆夠展示嗎？或拉到 30 顆做漸變效果？
-5. 是否要加實體按鈕（GPIO input）做 fallback 控制？
+2. 封裝形式：3D 列印外殼？開模？還是用現成壓克力盒？
+3. LED 顆數：5 顆夠展示嗎？或拉到 30 顆做漸變效果？
+4. 是否要加實體按鈕（GPIO input）做 fallback 控制？
 
 ## 採購清單（NanoPi 路線估算）
 
