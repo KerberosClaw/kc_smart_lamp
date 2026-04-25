@@ -163,6 +163,35 @@ ssh root@<找到的 IP>
 | `nanopi.local` 解析不到 | mDNS 沒上來，改用 `arp -a` 或路由器 DHCP 列表找 IP |
 | WiFi 連不上 | SSID/PSK 有特殊字元，改用 `wpa_passphrase YOUR_SSID YOUR_PASSWORD` 產生 hash 取代明文 PSK |
 
+## 踩雷紀錄（2026-04-26 首次嘗試 Path B）
+
+實際走 Path B 流程踩到的坑（按順序記，未來重試可避）：
+
+1. **`sd-fuse_nanopi/fusing.sh` 用過時 sfdisk 旗標** — `sfdisk -u S -f --Linux` 在 util-linux 2.32+ 已移除。Debian 13 (Trixie) 跑會 silent fail（fusing.sh 的 `try()` wrapper 沒抓到），結果是「BL/kernel 寫入 OK，但 partition table 沒建」。
+   - 修法：`sed -i 's/sfdisk -u S -f --Linux/sfdisk -f/g' fusing.sh`
+2. **`mkrootfs.sh` 對 loop device 的 partition naming 有 bug** — script 寫死 `/dev/${DEV_NAME}1` → 對 `/dev/loop0` 變 `/dev/loop01`，但 kernel 實際 enumerate 是 `/dev/loop0p1`（多 `p`）。
+   - 修法：跑 mkrootfs.sh 前 `for i in 1 2 3; do ln -sf /dev/loop0p$i /dev/loop0$i; done`
+   - 注意：對 `/dev/sda` 沒這問題（partition 是 sda1/sda2/sda3，無 `p`），所以**直接燒實體 SD 比走 image 簡單**
+3. **rootfs tarball URL 過期** — `wiki.friendlyarm.com` 重導到 `wiki.friendlyelec.com`（新 domain），且 HTTPS cert 過期。mkrootfs.sh 的 `wget` 無 `--no-check-certificate` 拿到 ~800-byte HTML 錯誤頁，假裝成功但 tar 解開時 `gzip: stdin: not in gzip format` 才爆。
+   - 修法：手動 pre-download 到 `prebuilt/`：`wget --no-check-certificate -O prebuilt/nanopi-debian-jessie-rootfs.tgz https://wiki.friendlyelec.com/NanoPi/download/nanopi-debian-jessie-rootfs.tgz`
+4. **Image size 必須等於 SD 實際容量** — S3C2451 iROM 從 disk 末端固定 offset 找 BL1。16GB image 燒到 32GB 卡 → bootloader 落在 SD 中間，iROM 看末端是空白 = 不 boot。**不能 dd 一份 image 到比它大的卡**。
+   - 解法 A：用 `truncate -s <SD bytes>` 建跟 SD 同大小的 sparse image
+   - 解法 B（更簡單）：UTM 連實體 SD，直接 `fusing.sh /dev/sda`，BLOCK_CNT 從 `/sys/block/sda/size` 自動讀
+5. **WiFi 預配跳過 USB Gadget RNDIS** — 實作經驗：mount sda2 寫 `/etc/wpa_supplicant/wpa_supplicant.conf` + `/etc/network/interfaces.d/wlan0` 確實 work，NanoPi 開機自動連 WiFi、SSH 起來。M1 沒 HoRNDIS 的限制可繞開
+6. **UTM USB passthrough 寫入沒過時靜默失敗** — 但常見原因是 SD 卡本體故障（lock 開關卡死、controller 進 read-only emergency 模式），不一定是 UTM。**每張不熟的 SD 跑 fusing.sh 前先做 persistence test**：
+   ```bash
+   sudo dd if=/dev/urandom of=/dev/sda bs=512 count=1 seek=100 oflag=direct
+   sync
+   sudo dd if=/dev/sda bs=512 count=1 skip=100 iflag=direct | od -An -tx1 | head -2
+   ```
+   讀回零 = 寫入沒持久化 = 換卡或檢查 lock
+7. **macOS Sequoia 對 raw block device 寫入有 system integrity 限制** — 即使 `sudo dd` 到 `/dev/rdiskN` 帶 Full Disk Access 都可能 silent-fail 寫不到 partition table 區。**BalenaEtcher**（內建 privileged helper + 適當 entitlement）能繞開
+8. **沒 UART console 等於瞎 debug** — boot 失敗只看到「LED 閃幾下→滅」零訊息。USB-TTL 線（FT232 / CP2102 / CH340，~NT$100-200）接 GPIO header TX/RX/GND 是最重要的嵌入式 debug 工具，下次採購順手帶一條
+
+**老 SD 卡（特別是用過很多年的 FAT32 老卡）容易進 read-only 救命模式**：本次踩到 2 張 16GB 老卡都是這狀況，唯一還能寫的是 32GB 新 SDHC。但 32GB 寫入成功後仍 boot 失敗（無 UART 看不到死在哪），結論：**等 UART 到貨再戰**。
+
+---
+
 ## 關鍵 Repo
 
 - 燒卡：https://github.com/friendlyarm/sd-fuse_nanopi
