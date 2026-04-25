@@ -1,7 +1,5 @@
 # 採購指南 / Shopping Script
 
-> **English TL;DR**: A read-aloud shopping script for sourcing the no-solder bring-up parts (ESP32-C3 SuperMini pre-soldered, WS2812B 8-LED Ring with pre-soldered leads, breadboard, jumper wires) at a Taiwanese electronics shop. Locale-bound to Mandarin storefronts. International readers can use the parts table + decision rationale, but the speech sections won't apply.
-
 進電子材料行時可直接「照唸」。本文件目標：讓**沒硬體經驗**的 owner（或未來 clone repo 的人）也能順利把所有元件買齊。
 
 設計原則見 [ADR 0001](decisions/0001-led-form-factor.md)（為何選 8 LED Ring）+ [ADR 0002](decisions/0002-no-solder-bring-up.md)（為何完全不焊接）。
