@@ -1,6 +1,6 @@
 # Dev Setup & Bring-up Plan
 
-> **English summary:** MacBook Pro (macOS, Apple Silicon) development setup using PlatformIO + VSCode for ESP32-S3-WROOM-1 N16R8. Hardware procured 2026-04-26 from JinHua Electronics (光華商場); WS2812B 8-LED ring pending Shopee shipment. Bring-up plan in 6 milestones: hardware power-on → BLE advertise → GATT service → on-board LED driver → external Ring driver → end-to-end host BLE write. The dev board's on-board WS2812 RGB LED lets us validate the full BLE → FastLED → LED chain before the external Ring arrives.
+> **English summary:** MacBook Pro (macOS, Apple Silicon) development setup using PlatformIO + VSCode for ESP32-S3-WROOM-1 N16R8. Hardware procured 2026-04-26 from a local electronics shop; WS2812B 8-LED ring pending Shopee shipment. Bring-up plan in 6 milestones: hardware power-on → BLE advertise → GATT service → on-board LED driver → external Ring driver → end-to-end host BLE write. The dev board's on-board WS2812 RGB LED lets us validate the full BLE → FastLED → LED chain before the external Ring arrives.
 
 ---
 
@@ -10,11 +10,11 @@
 
 | 品項 | 規格 | 數量 | 來源 |
 |---|---|---|---|
-| ESP32-S3-WROOM-1 N16R8 開發板 | 焊好版 PCB 天線、Native USB-C | 1 | 金華電子（光華商場） |
-| 杜邦線 | 公對公 + 母對公 | 各 1 包 | 金華電子 |
+| ESP32-S3-WROOM-1 N16R8 開發板 | 焊好版 PCB 天線、Native USB-C | 1 | 坊間電子材料行 |
+| 杜邦線 | 公對公 + 母對公 | 各 1 包 | 同上 |
 | USB-C 線 | 資料 + 充電 | 1 | 既有 / 順手帶 |
 
-**Why ESP32-S3（de facto，不是經過 ADR 的決定）**：原 `procurement_guide.md` 寫的目標是 ESP32-C3 SuperMini，採購當下材料行剛好有「焊好排針 + Native USB-C」的 S3-WROOM-1 N16R8 在貨。事後檢視這個替換 net positive — S3 比 C3 多了 PSRAM 8MB、雙核 + LP core、native USB Serial/JTAG，BLE 5.0 / FastLED / NimBLE-Arduino 全部向下相容，沒犧牲任何原本規劃的功能。**沒寫成 ADR 是因為它不是 deliberate decision，而是現場現貨決定的事實**；這段筆記就是它的歷史 record。
+**Why ESP32-S3（de facto，不是經過 ADR 的決定）**：原本目標是 ESP32-C3 SuperMini，採購當下材料行剛好有「焊好排針 + Native USB-C」的 S3-WROOM-1 N16R8 在貨。事後檢視這個替換 net positive — S3 比 C3 多了 PSRAM 8MB、雙核 + LP core、native USB Serial/JTAG，BLE 5.0 / FastLED / NimBLE-Arduino 全部向下相容，沒犧牲任何原本規劃的功能。**沒寫成 ADR 是因為它不是 deliberate decision，而是現場現貨決定的事實**；這段筆記就是它的歷史 record。
 
 ### Pending (蝦皮網購)
 

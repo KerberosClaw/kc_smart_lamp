@@ -89,8 +89,6 @@ pio device monitor         # 看 boot log（115200 baud）
 
 - [docs/gatt_spec.md](docs/gatt_spec.md) — BLE GATT service / characteristic 規格
 - [docs/dev_setup.md](docs/dev_setup.md) — 開發環境 + 6 個 milestone bring-up plan
-- [docs/procurement_guide.md](docs/procurement_guide.md) — 硬體採購照唸腳本
-- [docs/nanopi_research.md](docs/nanopi_research.md) — 替代平台調研（已棄用，保留對照）
 - [docs/decisions/](docs/decisions/) — 架構決策紀錄（ADR）
 
 ## 專案結構
@@ -104,10 +102,7 @@ kc_smart_lamp/
 ├── docs/                     # 設計文件、決策、bring-up plan
 │   ├── decisions/            # ADRs
 │   ├── gatt_spec.md          # BLE GATT service / characteristic 規格
-│   ├── app_design_brief.md   # iOS app 設計方向
-│   ├── dev_setup.md          # 開發環境 + bring-up milestones
-│   ├── procurement_guide.md  # 採購照唸腳本
-│   └── nanopi_research.md    # 替代平台調研
+│   └── dev_setup.md          # 開發環境 + bring-up milestones
 ├── README.md                 # English
 ├── README_zh.md              # 本檔
 ├── CLAUDE.md                 # repo 給 Claude Code 用的守則

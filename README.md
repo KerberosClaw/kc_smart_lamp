@@ -89,8 +89,6 @@ See [docs/dev_setup.md](docs/dev_setup.md) for download-mode quirks, factory fir
 
 - [docs/gatt_spec.md](docs/gatt_spec.md) — GATT service / characteristic spec
 - [docs/dev_setup.md](docs/dev_setup.md) — dev environment + 6-milestone bring-up plan
-- [docs/procurement_guide.md](docs/procurement_guide.md) — hardware shopping script
-- [docs/nanopi_research.md](docs/nanopi_research.md) — alternative platform investigation (rejected, kept as reference)
 - [docs/decisions/](docs/decisions/) — architectural decision records (ADRs)
 
 ## Project Structure
@@ -104,10 +102,7 @@ kc_smart_lamp/
 ├── docs/                     # Design docs, decisions, bring-up plan
 │   ├── decisions/            # ADRs
 │   ├── gatt_spec.md          # BLE GATT service / characteristic spec
-│   ├── app_design_brief.md   # iOS app design direction
-│   ├── dev_setup.md          # Dev environment + bring-up milestones
-│   ├── procurement_guide.md  # Shopping script for hardware
-│   └── nanopi_research.md    # Alternative platform investigation
+│   └── dev_setup.md          # Dev environment + bring-up milestones
 ├── README.md                 # This file
 ├── README_zh.md              # 正體中文版
 ├── CLAUDE.md                 # Repo conventions for Claude Code
