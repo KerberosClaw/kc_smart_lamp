@@ -185,6 +185,20 @@ GATT spec 已正式化在 [docs/gatt_spec.md](gatt_spec.md) — 單一 service +
 
 ---
 
+## Disk hygiene — 燒完韌體可砍 build cache
+
+`firmware/.pio/build/` 是 build 產物（~130 MB），**燒進板子後就沒用**。下次要改 firmware 時，重編 ~16 秒：
+
+```bash
+rm -rf firmware/.pio/build
+```
+
+Toolchain + framework 在 `~/.platformio/` 全域 cache，不會重抓；`firmware/.pio/libdeps/`（NimBLE-Arduino + FastLED 的 lib copy）也還在。
+
+要更激進連 lib copy 一起砍：`rm -rf firmware/.pio` — 再省 ~45 MB，下次重抓 lib + 重編總共 ~30-60 秒。
+
+---
+
 ## Out of scope (POC 階段不做)
 
 - 多裝置管理 / scene / 排程
