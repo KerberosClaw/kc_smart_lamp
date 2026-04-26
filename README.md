@@ -34,11 +34,49 @@ This project exists because every off-the-shelf BLE LED on the market today eith
 
 ## Quick Start
 
-> Hardware purchase, firmware flash, and pairing instructions will land here as the project progresses. This README will be updated alongside each milestone.
+### Host — CLI + Web (cross-platform)
 
-For now, see:
-- [docs/nanopi_research.md](docs/nanopi_research.md) — NanoPi alternative path investigation (rejected, kept as reference)
-- The GATT spec, firmware source, host client, and enclosure CAD will follow.
+Tested on macOS / Linux / Windows. Requires Python 3.12+.
+
+```bash
+pipx install ./host
+
+smart-lamp-web                                       # Web UI on http://localhost:8080
+smart-lamp --hex FF0000 --brightness 50 --on        # CLI: red at 50%
+smart-lamp --color blue --brightness 80             # CLI: named color
+smart-lamp --off                                     # CLI: turn off
+```
+
+If you don't have `pipx`: `python3 -m pip install --user pipx && pipx ensurepath`.
+
+### Firmware — one-time flash (requires the dev board)
+
+```bash
+pipx install platformio
+cd firmware
+
+# Put board in download mode: hold BOOT, press RST, release RST, release BOOT
+pio run -t upload          # build + flash
+pio device monitor         # tail boot log (115200 baud)
+```
+
+After flashing, the lamp advertises as `kc_smart_lamp` over BLE and waits for writes.
+
+See [docs/dev_setup.md](docs/dev_setup.md) for download-mode quirks, factory firmware backup, and bring-up milestones; [docs/gatt_spec.md](docs/gatt_spec.md) for the wire-level service / characteristic definition.
+
+### Platform-specific notes
+
+- **Windows**: First run prompts for Bluetooth permission — click Allow. ESP32-S3 USB drivers auto-install on Windows 10/11.
+- **Linux**: `bluez` must be running. Some distributions need `sudo setcap cap_net_raw+eip $(readlink -f $(which python3))` for unprivileged BLE scanning.
+- **macOS**: Native via CoreBluetooth, no extra setup.
+
+### Reference
+
+- [docs/gatt_spec.md](docs/gatt_spec.md) — GATT service / characteristic spec
+- [docs/dev_setup.md](docs/dev_setup.md) — dev environment + 6-milestone bring-up plan
+- [docs/procurement_guide.md](docs/procurement_guide.md) — hardware shopping script
+- [docs/nanopi_research.md](docs/nanopi_research.md) — alternative platform investigation (rejected, kept as reference)
+- [docs/decisions/](docs/decisions/) — architectural decision records (ADRs)
 
 ## Project Structure
 
@@ -49,6 +87,7 @@ kc_smart_lamp/
 ├── hardware/                 # 3D-printed enclosure (OpenSCAD .scad) + wiring
 ├── docs/                     # Design docs, decisions, bring-up plan
 │   ├── decisions/            # ADRs
+│   ├── gatt_spec.md          # BLE GATT service / characteristic spec
 │   ├── dev_setup.md          # Dev environment + bring-up milestones
 │   ├── procurement_guide.md  # Shopping script for hardware
 │   └── nanopi_research.md    # Alternative platform investigation

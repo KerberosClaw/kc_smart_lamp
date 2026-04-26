@@ -77,7 +77,7 @@ esptool --chip esp32s3 --port /dev/cu.usbmodem2101 \
 
 ### Target machine
 
-Mac mini (macOS, Apple Silicon 推測)。
+MacBook Pro (macOS, Apple Silicon)。
 
 ### Required tools
 
@@ -120,13 +120,20 @@ ESP-IDF 太重，POC 用不到。Arduino IDE 適合 quick demo 但 project 結�
 
 ### M3: GATT service + write characteristic
 
-- ESP32 firmware 加自定 GATT service（自選 UUID）
-- 加一個 `write` characteristic（接 RGB byte stream，例如 3 bytes `R G B`）
-- write callback 把收到的值用 Serial print 出來
-- Mac 端寫 Python `bleak` script：scan → connect → write characteristic
-- 在 PlatformIO Serial Monitor 看到 ESP32 收到對應值
+GATT spec 已正式化在 [docs/gatt_spec.md](gatt_spec.md) — 單一 service + 單一 5-byte `LAMP_STATE` characteristic（power/RGB/brightness 原子寫入）。
 
-**Exit criteria**：Mac Python script 寫 `(255, 0, 0)` → Serial Monitor 印 `R=255 G=0 B=0`。
+- firmware: NimBLE-Arduino 建 service + characteristic（已寫在 `firmware/src/main.cpp`）
+- write callback 把 5 bytes 解開印 Serial、套到 FastLED
+- host: `lamp_client/ble.py` 提供 `LampClient` async context manager（`async with` connect → `set_state()` 寫 → 自動斷）
+- CLI 驗證：`smart-lamp --hex FF0000 --brightness 50 --on`
+- Serial Monitor 看到 `[ble] state: power=1 rgb=(255,0,0) brightness=50%`
+
+**Exit criteria**：CLI 寫紅色 → Serial Monitor 印對應 5 bytes 解析值。
+
+**🔖 Future TODO（v1.1，已 memo）**：CLI 跟 Web 都要加 **`status` 讀取功能**，理由是 user 可能想「保留顏色，只調亮度／開關」。
+- Lib 層 `LampClient.get_state()` **已實作**（v1 從第一天就完整）
+- CLI / Web 還沒暴露這個指令；要時再 wire 約 10 行 code
+- Use cases + 對應改動見 [gatt_spec.md → "Future: client-side status command"](gatt_spec.md)
 
 ### M4a: 板載 LED 驗證 FastLED + GATT chain（不等 Ring 到貨也能做）
 
@@ -183,6 +190,7 @@ ESP-IDF 太重，POC 用不到。Arduino IDE 適合 quick demo 但 project 結�
 
 ## Reference
 
+- [GATT spec](gatt_spec.md) — service + characteristic 正式定義
 - [ESP32-S3-WROOM-1 datasheet (Espressif)](https://www.espressif.com/sites/default/files/documentation/esp32-s3-wroom-1_wroom-1u_datasheet_en.pdf)
 - [NimBLE-Arduino GitHub](https://github.com/h2zero/NimBLE-Arduino)
 - [FastLED](https://github.com/FastLED/FastLED)

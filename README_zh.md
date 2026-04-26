@@ -34,11 +34,49 @@
 
 ## 快速開始
 
-> 採購清單、韌體燒錄、配對流程會隨專案進展補上 README。
+### Host — CLI + Web（跨平台）
 
-目前可看：
-- [docs/nanopi_research.md](docs/nanopi_research.md) — NanoPi 替代路線調研（已棄用，保留作為對照）
-- GATT 規格、韌體原始碼、host client、外殼 CAD 後續陸續加入
+macOS / Linux / Windows 都通，需要 Python 3.12+。
+
+```bash
+pipx install ./host
+
+smart-lamp-web                                      # Web UI 在 http://localhost:8080
+smart-lamp --hex FF0000 --brightness 50 --on       # CLI：紅色 50%
+smart-lamp --color blue --brightness 80            # CLI：命名色
+smart-lamp --off                                    # CLI：關燈
+```
+
+沒裝 `pipx`：`python3 -m pip install --user pipx && pipx ensurepath`。
+
+### Firmware — 一次性燒錄（需要開發板）
+
+```bash
+pipx install platformio
+cd firmware
+
+# 板子推進 download mode：按住 BOOT、按 RST、放 RST、放 BOOT
+pio run -t upload          # 編譯 + 燒錄
+pio device monitor         # 看 boot log（115200 baud）
+```
+
+燒完後 lamp 會以 `kc_smart_lamp` 廣播 BLE，等 client 寫入。
+
+詳細燒錄踩坑（download mode 序列、出廠 firmware 備份等）看 [docs/dev_setup.md](docs/dev_setup.md)；BLE wire 規格看 [docs/gatt_spec.md](docs/gatt_spec.md)。
+
+### 平台特殊事項
+
+- **Windows**：第一次跑會跳 Bluetooth 權限視窗，點允許。Win10/11 自動裝 ESP32-S3 USB 驅動
+- **Linux**：`bluez` 要在跑。部分發行版要 `sudo setcap cap_net_raw+eip $(readlink -f $(which python3))` 才能不用 root 掃 BLE
+- **macOS**：CoreBluetooth native，零額外設定
+
+### 參考文件
+
+- [docs/gatt_spec.md](docs/gatt_spec.md) — BLE GATT service / characteristic 規格
+- [docs/dev_setup.md](docs/dev_setup.md) — 開發環境 + 6 個 milestone bring-up plan
+- [docs/procurement_guide.md](docs/procurement_guide.md) — 硬體採購照唸腳本
+- [docs/nanopi_research.md](docs/nanopi_research.md) — 替代平台調研（已棄用，保留對照）
+- [docs/decisions/](docs/decisions/) — 架構決策紀錄（ADR）
 
 ## 專案結構
 
@@ -49,6 +87,7 @@ kc_smart_lamp/
 ├── hardware/                 # 3D 列印外殼（OpenSCAD .scad）+ 配線
 ├── docs/                     # 設計文件、決策、bring-up plan
 │   ├── decisions/            # ADRs
+│   ├── gatt_spec.md          # BLE GATT service / characteristic 規格
 │   ├── dev_setup.md          # 開發環境 + bring-up milestones
 │   ├── procurement_guide.md  # 採購照唸腳本
 │   └── nanopi_research.md    # 替代平台調研
