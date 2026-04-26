@@ -64,6 +64,55 @@ smart-lamp --off                                    # CLI：關燈
 
 沒裝 `pipx`：`python3 -m pip install --user pipx && pipx ensurepath`。
 
+#### Web service：啟動、停止、REST API
+
+啟動（前景跑，shell / cmd 直接打）：
+
+```
+$ smart-lamp-web
+ready: http://127.0.0.1:8080 (lamp connection in background)
+scanning for 'kc_smart_lamp' (timeout=5.0s) ...
+found kc_smart_lamp [XX:XX:XX:XX:XX:XX]
+lamp connected
+```
+
+第一行 `ready` 出現後 service 就 listen 了，**不用等 `lamp connected`** — 沒燈時 endpoint 回 503，連上後自動切 200。
+
+驗證 + 停止：
+
+```bash
+curl -X POST http://localhost:8080/api/lamp/on    # 燈白光 100%
+curl -X POST http://localhost:8080/api/lamp/off   # 燈滅
+# Ctrl-C 停止 service（cleanup BLE 連線）
+```
+
+Lamp 沒接電 / 不在範圍時 service 不會 crash，每隔幾秒重試（exponential backoff 2-60 秒）：
+
+```
+scan failed: no BLE device named 'kc_smart_lamp' found within 5.0s
+retrying in 2.0s ...
+```
+
+Lamp 一上線就自動接上，不用重啟 service。
+
+REST API：
+
+| Method | Path | Body | 用途 |
+|---|---|---|---|
+| `POST` | `/api/lamp/on` | （無） | 開燈：白光 100% 亮度 |
+| `POST` | `/api/lamp/off` | （無） | 關燈 |
+| `POST` | `/api/set_state` | `{power, r, g, b, brightness}` | 完整 5-byte 控制（Web UI 用此） |
+
+回應格式 `{"ok": true, "state": {...}}`。Lamp 未連線回 `503`。連線維持邏輯詳 [ADR 0006](docs/decisions/0006-reconnect-strategy.md)。
+
+Windows 雙擊跑：存成 `start_lamp.bat` 放桌面 —
+
+```bat
+@echo off
+smart-lamp-web
+pause
+```
+
 ### Firmware — 一次性燒錄（需要開發板）
 
 ```bash

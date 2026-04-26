@@ -64,6 +64,55 @@ smart-lamp --off                                     # CLI: turn off
 
 If you don't have `pipx`: `python3 -m pip install --user pipx && pipx ensurepath`.
 
+#### Web service: launch, stop, REST API
+
+Launch (foreground; runs in shell or cmd):
+
+```
+$ smart-lamp-web
+ready: http://127.0.0.1:8080 (lamp connection in background)
+scanning for 'kc_smart_lamp' (timeout=5.0s) ...
+found kc_smart_lamp [XX:XX:XX:XX:XX:XX]
+lamp connected
+```
+
+The service starts listening as soon as `ready` appears — **no need to wait for `lamp connected`**. Endpoints return `503` until the lamp connects, then auto-flip to `200`.
+
+Verify and stop:
+
+```bash
+curl -X POST http://localhost:8080/api/lamp/on    # white at 100%
+curl -X POST http://localhost:8080/api/lamp/off   # off
+# Ctrl-C to stop (cleans up BLE connection)
+```
+
+If the lamp is unpowered or out of range, the service does not crash — it retries with exponential backoff (2-60s):
+
+```
+scan failed: no BLE device named 'kc_smart_lamp' found within 5.0s
+retrying in 2.0s ...
+```
+
+The lamp auto-reconnects whenever it comes online; no service restart needed.
+
+REST API:
+
+| Method | Path | Body | Use |
+|---|---|---|---|
+| `POST` | `/api/lamp/on` | (none) | Turn on: white at 100% brightness |
+| `POST` | `/api/lamp/off` | (none) | Turn off |
+| `POST` | `/api/set_state` | `{power, r, g, b, brightness}` | Full 5-byte control (used by Web UI) |
+
+Response: `{"ok": true, "state": {...}}`. `503` when lamp not connected. Connection-maintenance details in [ADR 0006](docs/decisions/0006-reconnect-strategy.md).
+
+Windows double-click launcher — save as `start_lamp.bat`:
+
+```bat
+@echo off
+smart-lamp-web
+pause
+```
+
 ### Firmware — one-time flash (requires the dev board)
 
 ```bash
