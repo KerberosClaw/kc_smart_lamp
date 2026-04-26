@@ -127,7 +127,14 @@
         throw new Error(`${resp.status}: ${err}`);
       }
       $status.className = 'ok';
-      $status.textContent = 'OK';
+      $status.textContent = 'Applied';
+      // Auto-clear after a short window so it doesn't linger like a button.
+      setTimeout(() => {
+        if ($status.textContent === 'Applied') {
+          $status.className = '';
+          $status.textContent = '';
+        }
+      }, 2500);
     } catch (e) {
       $status.className = 'error';
       $status.textContent = `error: ${e.message}`;
