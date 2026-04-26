@@ -166,6 +166,7 @@
       state.sat = s;
       state.activePreset = null;
       render();
+      scheduleAutoApply();
     }
 
     function onPointerDown(e) {
@@ -199,6 +200,7 @@
       state.brightness = Math.round(x * 100);
       state.activePreset = null;
       render();
+      scheduleAutoApply();
     }
     dom.briTrack.addEventListener('pointerdown', (e) => {
       if (!state.power) return;
@@ -246,6 +248,20 @@
     });
   }
 
+  // ─── Auto-apply (debounced) ────────────────────────────────────────────────
+  // Continuous inputs (wheel drag, slider drag, keyboard) call this on every
+  // change.  The last call within the window wins, so the actual BLE write
+  // only fires once after the user stops moving.  220ms feels instant on
+  // release without firing mid-drag.
+  let autoApplyTimer = null;
+  function scheduleAutoApply(delay = 220) {
+    clearTimeout(autoApplyTimer);
+    autoApplyTimer = setTimeout(() => {
+      autoApplyTimer = null;
+      sendState();
+    }, delay);
+  }
+
   // ─── Apply ─────────────────────────────────────────────────────────────────
   async function sendState() {
     const rgb = hsvToRgb(state.hue, state.sat, 1);
@@ -290,6 +306,8 @@
       state.power = !state.power;
       state.activePreset = null;
       render();
+      // Discrete action — fire immediately, no debounce.
+      sendState();
     });
   }
 
