@@ -105,12 +105,13 @@
     dom.hexReadout.textContent = hex;
     dom.briReadout.textContent = `${state.brightness}%`;
 
-    // Wheel thumb position
+    // Wheel thumb position — hue 0° = top (matches CSS conic-gradient from 0deg).
+    // atan2 has 0° at 3 o'clock, so we shift by -90° here when projecting back.
     const wheelRect = dom.wheel.getBoundingClientRect();
     if (wheelRect.width > 0) {
       const r = wheelRect.width / 2;
       const inset = 14;
-      const rad = state.hue * Math.PI / 180;
+      const rad = (state.hue - 90) * Math.PI / 180;
       const x = r + Math.cos(rad) * state.sat * (r - inset);
       const y = r + Math.sin(rad) * state.sat * (r - inset);
       dom.wheelThumb.style.left = `${x}px`;
@@ -158,8 +159,10 @@
       const cy = rect.top  + r;
       const dx = clientX - cx;
       const dy = clientY - cy;
-      let h = Math.atan2(dy, dx) * 180 / Math.PI;
-      if (h < 0) h += 360;
+      // atan2 has 0° at 3 o'clock; CSS conic-gradient starts at 12 o'clock.
+      // Add 90° so hue 0° = red at top, matching the painted wheel.
+      let h = Math.atan2(dy, dx) * 180 / Math.PI + 90;
+      h = ((h % 360) + 360) % 360;
       const dist = Math.sqrt(dx * dx + dy * dy);
       const s = Math.min(1, dist / (r - inset));
       state.hue = h;
