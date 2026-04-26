@@ -84,7 +84,7 @@ pio device monitor         # 看 boot log（115200 baud）
 kc_smart_lamp/
 ├── firmware/                 # ESP32 韌體（PlatformIO project）
 ├── host/                     # Python BLE client（bleak）— CLI + Web UI
-├── ios/                      # iOS app（SwiftUI + CoreBluetooth）— 待開發
+├── ios/                      # iOS app（SwiftUI + CoreBluetooth）— SwiftUI 參考實作已 ready，待 Xcode 包專案
 ├── hardware/                 # 3D 列印外殼（OpenSCAD .scad）+ 配線
 ├── docs/                     # 設計文件、決策、bring-up plan
 │   ├── decisions/            # ADRs

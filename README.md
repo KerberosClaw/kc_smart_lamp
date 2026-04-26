@@ -84,7 +84,7 @@ See [docs/dev_setup.md](docs/dev_setup.md) for download-mode quirks, factory fir
 kc_smart_lamp/
 ├── firmware/                 # ESP32 firmware (PlatformIO project)
 ├── host/                     # Python BLE client (bleak) — CLI + Web UI
-├── ios/                      # iOS app (SwiftUI + CoreBluetooth) — pending
+├── ios/                      # iOS app (SwiftUI + CoreBluetooth) — reference impl, awaiting Xcode wrap
 ├── hardware/                 # 3D-printed enclosure (OpenSCAD .scad) + wiring
 ├── docs/                     # Design docs, decisions, bring-up plan
 │   ├── decisions/            # ADRs
