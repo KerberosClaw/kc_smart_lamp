@@ -126,7 +126,7 @@ struct LampScreen: View {
 
             // apply CTA
             ApplyButton(accent: lamp.accentColor) {
-                Task { await ble.write(lamp.payload()) }
+                Task { try? await ble.write(lamp.payload()) }
             }
             .opacity(lamp.power ? 1 : 0.45)
             .padding(.bottom, 12)
@@ -160,7 +160,7 @@ struct LampScreen: View {
             }
         }
         // presets auto-apply (skip Apply button per brief 6.1)
-        Task { await ble.write(lamp.payload()) }
+        Task { try? await ble.write(lamp.payload()) }
     }
 
     private func initialConnect() async {

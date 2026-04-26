@@ -94,7 +94,7 @@ enum HSV {
         let m = v - c
         let (r1, g1, b1): (Double, Double, Double)
         switch h {
-        case   0..< 60: (r1, g1, b1) = (c, x, 0)
+        case   0..<60:  (r1, g1, b1) = (c, x, 0)
         case  60..<120: (r1, g1, b1) = (x, c, 0)
         case 120..<180: (r1, g1, b1) = (0, c, x)
         case 180..<240: (r1, g1, b1) = (0, x, c)
