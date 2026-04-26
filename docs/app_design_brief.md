@@ -217,7 +217,7 @@
 |---|---|
 | Figma 設計時程 | _____ |
 | 修改回合 | _____ 輪 |
-| 預算 | NT$ _____ |
+| 預算 | _____ |
 | Deliverable | Figma file（含 design system / 主畫面 / widget mockup / animation spec） |
 
 ---

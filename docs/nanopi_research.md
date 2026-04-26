@@ -59,15 +59,15 @@
 
 ## 採購清單（NanoPi 路線估算）
 
-| 項目 | 規格 | 約價 NT$ |
-|---|---|---|
-| WS2812B LED strip | 1m 60 LED 5V（用前 5 顆即可） | 150-200 |
-| 杜邦線 | 公對公 + 母對公 各一包 | 50-80 |
-| USB-A 公頭 → 杜邦線 | 取 5V 給 LED 供電 | 30 |
-| 1000μF 電解電容 + 470Ω 電阻 | WS2812 防電源浪湧推薦 | 30 |
-| USB-TTL 線（選配） | UART debug，USB Gadget 卡住的後備 | 100 |
+| 項目 | 規格 |
+|---|---|
+| WS2812B LED strip | 1m 60 LED 5V（用前 5 顆即可） |
+| 杜邦線 | 公對公 + 母對公 各一包 |
+| USB-A 公頭 → 杜邦線 | 取 5V 給 LED 供電 |
+| 1000μF 電解電容 + 470Ω 電阻 | WS2812 防電源浪湧推薦 |
+| USB-TTL 線（選配） | UART debug，USB Gadget 卡住的後備 |
 
-**總計**：約 NT$ 360-440。SD 卡家裡有，NanoPi 家裡有。
+SD 卡家裡有，NanoPi 家裡有。
 
 ## 開發流程 — Path A：PC（Linux 原生）直接燒
 
@@ -186,7 +186,7 @@ ssh root@<找到的 IP>
    ```
    讀回零 = 寫入沒持久化 = 換卡或檢查 lock
 7. **macOS Sequoia 對 raw block device 寫入有 system integrity 限制** — 即使 `sudo dd` 到 `/dev/rdiskN` 帶 Full Disk Access 都可能 silent-fail 寫不到 partition table 區。**BalenaEtcher**（內建 privileged helper + 適當 entitlement）能繞開
-8. **沒 UART console 等於瞎 debug** — boot 失敗只看到「LED 閃幾下→滅」零訊息。USB-TTL 線（FT232 / CP2102 / CH340，~NT$100-200）接 GPIO header TX/RX/GND 是最重要的嵌入式 debug 工具，下次採購順手帶一條
+8. **沒 UART console 等於瞎 debug** — boot 失敗只看到「LED 閃幾下→滅」零訊息。USB-TTL 線（FT232 / CP2102 / CH340）接 GPIO header TX/RX/GND 是最重要的嵌入式 debug 工具，下次採購順手帶一條
 
 **老 SD 卡（特別是用過很多年的 FAT32 老卡）容易進 read-only 救命模式**：本次踩到 2 張 16GB 老卡都是這狀況，唯一還能寫的是 32GB 新 SDHC。但 32GB 寫入成功後仍 boot 失敗（無 UART 看不到死在哪），結論：**等 UART 到貨再戰**。
 
