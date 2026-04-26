@@ -21,6 +21,7 @@ from pathlib import Path
 
 import uvicorn
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
@@ -93,6 +94,17 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(lifespan=lifespan, title="kc_smart_lamp", version="0.2.0")
+
+# Allow browser-based clients (web UIs, voice triggers, automation pages) to call
+# the API from any origin. The service binds 127.0.0.1 by default so the attack
+# surface stays local; CORS only controls which web origins the browser will
+# deliver responses to.
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["GET", "POST"],
+    allow_headers=["*"],
+)
 
 
 async def _apply(state: LampState) -> dict:
