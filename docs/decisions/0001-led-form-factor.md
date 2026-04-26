@@ -1,6 +1,6 @@
 # ADR 0001: LED 硬體形式 — 8 LED Ring
 
-**Status**: Accepted
+**Status**: Accepted (sourcing pivoted to 蝦皮 2026-04-26)
 **Date**: 2026-04-26
 **Supersedes**: `docs/nanopi_research.md` 採購清單第一項「WS2812B LED strip 1m 60 LED 5V」
 
@@ -59,6 +59,14 @@ Use case 收斂：
 
 ### 後續動作
 
-- [ ] 採購：金華電料行確認 8 LED Ring 庫存（無則改 Jewel 7 或 Stick 8）
-- [ ] 更新 `README_zh.md` 架構圖 LED 描述
+- [x] 採購：金華電料行確認 8 LED Ring 庫存 — **無預焊版**，改走蝦皮
+- [ ] 更新 `README_zh.md` 架構圖 LED 描述（Ring 到貨後對齊）
 - [ ] firmware 設計：5 顆主用 + 3 顆預設黑（保留 mode 切換可全亮）
+
+---
+
+## Update 2026-04-26 — Procurement
+
+- **Sourcing channel changed**：8 LED Ring 改走蝦皮（實體店家難確認「真的預焊」vs「焊盤裸露」），預估 2-3 天到貨
+- **Decision unchanged**：仍是 8 LED Ring 預焊版
+- **Bonus**：實買的 ESP32-S3-WROOM-1 N16R8 dev board 內建一顆 WS2812 RGB LED（同協定），可在 Ring 到貨前先驗整條 BLE → FastLED → WS2812 chain（[dev_setup.md M4a](../dev_setup.md)），M4b 切外接 Ring 只改 `NUM_LEDS` 跟 data pin 兩個常數

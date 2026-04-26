@@ -1,6 +1,6 @@
 # ADR 0002: 零焊接 bring-up 路線
 
-**Status**: Accepted
+**Status**: Validated 2026-04-26（零焊接路線採購驗證成功 — chip 排針已焊，杜邦線 + 麵包板插即用）
 **Date**: 2026-04-26
 
 ## Context
@@ -73,7 +73,27 @@ bring-up 階段採用 **B + C 混合路線**：
 
 ### 後續動作
 
-- [ ] 進金華**前**先打電話：「ESP32-C3 SuperMini 有沒有排針已焊版？沒有的話能不能代焊？」
-- [ ] 採購清單依此 ADR + ADR 0001 收齊
+- [x] 進金華**前**先打電話：今華電子 2026-04-26 確認沒代焊服務、建議現場看
+- [x] 採購清單依此 ADR + ADR 0001 收齊（部分 — Ring 走蝦皮，麵包板等 M4b 再買）
 - [ ] bring-up 完成後重新評估：是否要學焊接做永久成品
 - [ ] 外殼設計（OpenSCAD）暫緩，等 bring-up + 焊接決議後再開 ADR
+
+---
+
+## Update 2026-04-26 — Procurement
+
+零焊接路線**驗證成功**。Chip 從計畫的 C3 SuperMini 替換成 **ESP32-S3-WROOM-1 N16R8**（金華電子當下在貨的焊好版是 S3，de facto 紀錄見 [dev_setup.md → "Why ESP32-S3 (de facto)"](../dev_setup.md)）。
+
+**對本 ADR 的「不焊」標準影響：零** — S3 / C3 都符合排針已焊 + Native USB-C 兩條件。
+
+實際採購 vs 原 BOM 對照：
+
+| 項目 | 原計畫 | 實採 (2026-04-26) |
+|---|---|---|
+| ESP32 dev board | C3 SuperMini NT$150–220 | **S3-WROOM-1 N16R8 NT$400**（金華電子，已焊排針） |
+| WS2812B 8 LED Ring | 實體店預焊版 | **改走蝦皮**（見 ADR 0001 update），2-3 天到貨 |
+| 麵包板 400 孔 | 入門款 | ⏳ 未採購（M4a 用板載 LED 不需要，待 Ring 到貨補） |
+| 杜邦線 | 公對母 + 母對母 各一包 | 公對公 + 母對公 各一包（spec 略不同，M4b 接線時若不夠再補 母對母） |
+| USB-C 線 | 既有 | 既有 |
+
+**Lesson learned**：實體店預焊版「規格找不到 → 跑網購」是常態，不必硬等實體店。但實體店的價值在於 chip / dev board 的「現場挑選 + 看實物」，這個無法被網購取代。混合策略最務實。

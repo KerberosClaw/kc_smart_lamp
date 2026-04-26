@@ -35,3 +35,7 @@ dist/
 
 # Logs
 *.log
+
+# Firmware dumps / binary backups (not source — keep local only)
+factory_dumps/
+*.bin

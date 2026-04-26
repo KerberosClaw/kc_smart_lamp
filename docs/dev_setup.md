@@ -1,6 +1,6 @@
 # Dev Setup & Bring-up Plan
 
-> **English summary:** Mac mini macOS development setup using PlatformIO + VSCode for ESP32-S3-WROOM-1 N16R8. Hardware procured 2026-04-26 from JinHua Electronics (光華商場); WS2812B 8-LED ring pending Shopee shipment. Bring-up plan in 5 milestones: hardware power-on → BLE advertise → GATT service → LED driver → end-to-end host BLE write.
+> **English summary:** Mac mini macOS development setup using PlatformIO + VSCode for ESP32-S3-WROOM-1 N16R8. Hardware procured 2026-04-26 from JinHua Electronics (光華商場); WS2812B 8-LED ring pending Shopee shipment. Bring-up plan in 6 milestones: hardware power-on → BLE advertise → GATT service → on-board LED driver → external Ring driver → end-to-end host BLE write. The dev board's on-board WS2812 RGB LED lets us validate the full BLE → FastLED → LED chain before the external Ring arrives.
 
 ---
 
@@ -14,6 +14,8 @@
 | 杜邦線 | 公對公 + 母對公 | 各 1 包 | 金華電子 |
 | USB-C 線 | 資料 + 充電 | 1 | 既有 / 順手帶 |
 
+**Why ESP32-S3（de facto，不是經過 ADR 的決定）**：原 `procurement_guide.md` 寫的目標是 ESP32-C3 SuperMini，採購當下材料行剛好有「焊好排針 + Native USB-C」的 S3-WROOM-1 N16R8 在貨。事後檢視這個替換 net positive — S3 比 C3 多了 PSRAM 8MB、雙核 + LP core、native USB Serial/JTAG，BLE 5.0 / FastLED / NimBLE-Arduino 全部向下相容，沒犧牲任何原本規劃的功能。**沒寫成 ADR 是因為它不是 deliberate decision，而是現場現貨決定的事實**；這段筆記就是它的歷史 record。
+
 ### Pending (蝦皮網購)
 
 | 品項 | 規格 | 預估 | 關鍵字 |
@@ -23,6 +25,51 @@
 | 1000μF 電解電容 + 470Ω 電阻 | WS2812 防電源浪湧（POC 可省） | NT$ 30 | `WS2812 防浪湧 套件` |
 
 到貨估 2-3 天。
+
+### Factory Firmware Backup
+
+板子出廠帶 ESP-IDF `example` 工廠測試 firmware（USB CDC 每 1.5 秒印 log + 板載 RGB LED 跑彩色循環）。**燒自己的 firmware 前已完整備份起來**，留作後悔藥。
+
+| 項目 | 值 |
+|---|---|
+| 檔案 | `factory_dumps/factory_firmware_2026-04-26.bin` |
+| 大小 | 1,114,112 bytes (1.06 MB) |
+| 涵蓋範圍 | 0x0 → 0x110000（bootloader + partition table + nvs + phy_init + factory app） |
+| SHA256 | `4dd0476f2da2284928220d214392ff174a8482a633b01f0fd4c99cc23c019481` |
+| Partition layout | nvs @ 0x9000 (24KB) / phy_init @ 0xF000 (4KB) / factory app @ 0x10000 (1MB) |
+
+> 備份檔案在 `.gitignore` 內（`factory_dumps/` + `*.bin`），**不會推到 GitHub**，純本地保留。
+
+**還原指令**（萬一搞壞 / 想回到出廠狀態）：
+
+```bash
+# 1. 板子推進 download mode（按住 BOOT，按 RST，放 RST，放 BOOT；LED 停閃）
+# 2. 確認裝置路徑
+ls /dev/cu.usbmodem*  # 應該看到 /dev/cu.usbmodem2101（USB-Serial/JTAG endpoint）
+# 3. 寫回
+esptool --chip esp32s3 --port /dev/cu.usbmodem2101 \
+        --before no-reset --after hard-reset \
+        write-flash 0 factory_dumps/factory_firmware_2026-04-26.bin
+# 4. 按 RST 確認回 firmware mode（usbmodem1234561 出現 + LED 開始彩色循環）
+```
+
+### Board-specific quirks（踩坑筆記）
+
+這顆 S3-WROOM-1 N16R8 仿板在 macOS 上的特性，**燒錄 / debug 時會反覆遇到**：
+
+- **兩個 USB endpoint，路徑會切換**：
+  - `/dev/cu.usbmodem1234561` = USB-OTG（firmware 自做的 CDC，跑 firmware 時的 log/console）
+  - `/dev/cu.usbmodem2101` = USB-Serial/JTAG（ROM bootloader + esptool 燒錄通道）
+  - **裝置路徑變了 ≠ 錯誤**，是 mode 切換的正常副作用
+- **Auto-reset 進 download mode 不可靠**（ESP32-S3 native USB 的 DTR/RTS 模擬問題）→ 燒錄前**手動序列**：
+  1. 按住 **BOOT** 鈕
+  2. 按一下 **RST**（BOOT 還按著）
+  3. 放開 **RST**（BOOT 還按著）
+  4. 放開 **BOOT**
+  → 板載 LED 停閃 = 已進 download mode
+- **`esptool --baud 921600` 不穩**：~7% 處會 `Serial data stream stopped`。**改 `--baud 115200`**（雖只 11 KB/s 但穩）。實務上備份只需 0x0-0x110000 = 1.5 分鐘
+- **`--after hard-reset` 常常不會真的踢回 firmware mode**：判斷方法 — `ls /dev/cu.usbmodem*` 看到 `usbmodem1234561` 才是真的回去了，沒看到就**手動按一下 RST**
+- **板載 RGB LED 是 WS2812 單顆**（同協定，跟 Ring 一樣可用 FastLED 驅動），可在 Ring 到貨前先把整條 BLE→LED chain 驗起來；GPIO 預設先試 **GPIO 48**（官方 ESP32-S3-DevKitC-1 接法），不亮再試 38 / 47
 
 ---
 
@@ -81,14 +128,34 @@ ESP-IDF 太重，POC 用不到。Arduino IDE 適合 quick demo 但 project 結�
 
 **Exit criteria**：Mac Python script 寫 `(255, 0, 0)` → Serial Monitor 印 `R=255 G=0 B=0`。
 
-### M4: LED 接上 + FastLED 驅動（等 LED 到貨）
+### M4a: 板載 LED 驗證 FastLED + GATT chain（不等 Ring 到貨也能做）
 
-- WS2812B 8-LED Ring 接線：
-  - **5V** → ESP32 5V pin（USB 直給）
-  - **GND** → ESP32 GND
-  - **DIN** → ESP32 GPIO（建議 GPIO 18 或任一空閒 pin）
-- firmware 加 FastLED lib，把 GATT write callback 改成 `leds[0..7] = CRGB(R, G, B); FastLED.show();`
-- 從 Mac 寫 BLE → LED 真的變色
+板子有內建一顆 WS2812 RGB LED（出廠 firmware 跑彩色循環的就是它），協定跟外接 Ring 完全一樣 — 拿來先把 BLE → FastLED → WS2812 整條鏈路驗起來，**Ring 到貨前 2-3 天可以先把 firmware 寫完**。
+
+- firmware 加 `FastLED` lib（PlatformIO `lib_deps`）
+- `NUM_LEDS = 1`、data pin 預設 **GPIO 48**（官方 ESP32-S3-DevKitC-1 接法）→ 不亮再依序試 GPIO 38、47
+- 把 M3 的 GATT write callback 改成 `leds[0] = CRGB(R, G, B); FastLED.show();`
+- 補一段 boot self-test：開機 1 秒紅、1 秒綠、1 秒藍 → 證明 GPIO + FastLED 對
+
+**Exit criteria**：
+1. 燒進去後板載 LED 跑紅綠藍 self-test（不再是出廠的隨機色循環）
+2. Mac Python script 寫 `(255, 0, 0)` → 板載 LED 變紅
+3. 寫 `(0, 0, 0)` → 板載 LED 熄滅
+
+### M4b: 外接 8-LED Ring（等 Ring 到貨後做）
+
+幾乎只是改常數 + 接線。**firmware 邏輯 100% 沿用 M4a**：
+
+- 接線：
+  - **5V** → ESP32 5V pin（USB 直給；8 顆滿亮 ~480mA，USB 5V 足夠）
+  - **GND** → ESP32 GND（共地必須，否則 LED 抖 / 不亮）
+  - **DIN** → ESP32 GPIO（建議 GPIO 18，或任一空閒非 strapping pin）
+- firmware 改兩行：
+  - `NUM_LEDS = 8`
+  - `#define LED_PIN 18`（或實際接的腳）
+- 重新燒，BLE 寫紅色 → 8 顆全紅
+
+**邊界注意**：ESP32-S3 是 3.3V logic，WS2812B spec 標 5V data。短距離 + 低 LED 數通常 work；若閃爍 / 顏色不對，加 level shifter（74AHCT125 之類）。
 
 **Exit criteria**：Mac 寫紅色 → Ring 8 顆 LED 全紅。
 
