@@ -1,0 +1,14 @@
+// Local.xcconfig — copy to Local.xcconfig and fill in your own values
+// This file is gitignored. Real values stay on your machine.
+//
+// Usage:
+//   1. cp ios/Local.xcconfig.example ios/Local.xcconfig
+//   2. Open the project in Xcode
+//   3. Select the project → kc_smart_lamp target → Signing & Capabilities
+//   4. Set your own Team and a Bundle Identifier under your team's namespace
+//      (Xcode will write the values into pbxproj for your local build only;
+//       the gitignored Local.xcconfig is here for those who prefer the
+//       xcconfig workflow.)
+
+DEVELOPMENT_TEAM =
+PRODUCT_BUNDLE_IDENTIFIER = com.yourorg.kc-smart-lamp

@@ -38,6 +38,7 @@ DerivedData/
 *.app
 *.ipa
 *.xcarchive
+ios/Local.xcconfig
 
 # Local config / credentials
 .env
