@@ -1,5 +1,7 @@
 # 採購指南 / Shopping Script
 
+> **English summary:** A shopping script for the kc_smart_lamp hardware bill of materials, written so an owner without prior electronics experience (or a future cloner of this repo) can walk into a Taiwanese electronics shop and read the page out loud. First procurement run completed 2026-04-26; document kept for restocks and re-buys. Design rationale: ADR 0001 (LED form factor) + ADR 0002 (no soldering).
+
 進電子材料行時可直接「照唸」。本文件目標：讓**沒硬體經驗**的 owner（或未來 clone repo 的人）也能順利把所有元件買齊。
 
 設計原則見 [ADR 0001](decisions/0001-led-form-factor.md)（為何選 8 LED Ring）+ [ADR 0002](decisions/0002-no-solder-bring-up.md)（為何完全不焊接）。

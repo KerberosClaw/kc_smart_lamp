@@ -4,6 +4,8 @@
 **Date**: 2026-04-26
 **For**: 接案設計師 / 工作室 / 未來自己重看
 
+> **English summary:** Design brief for the kc_smart_lamp iOS companion app, addressed to a freelance designer (or the future self trying to remember the original direction). Covers product positioning, target users, key use scenarios, visual style, layout, and just enough technical context for design decisions. Sections 1-5 are required reading; 6-10 are reference depth.
+
 > **設計師閱讀順序建議**：第 1-5 節先讀（產品 / user / 場景 / 風格），第 6-9 節是 functional / layout / 細節（在實際下手前再深入），第 10 節是技術背景（不必讀懂，僅供 reference）。
 
 ---

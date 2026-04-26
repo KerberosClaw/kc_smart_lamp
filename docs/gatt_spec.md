@@ -4,6 +4,8 @@
 **Status**: Draft (not yet validated against hardware)
 **Date**: 2026-04-26
 
+> **English summary:** Wire-level BLE GATT specification for kc_smart_lamp. Defines a single service exposing one characteristic (`LAMP_STATE`) — a 5-byte write atomically updates power, RGB color, and brightness. The whole protocol fits in a coffee break.
+
 ## Overview
 
 kc_smart_lamp 暴露**一個** BLE GATT service、**一個** characteristic（`LAMP_STATE`）。單次 5-byte write 就 atomically 更新整個 lamp 狀態（power + RGB + brightness）。

@@ -4,6 +4,8 @@
 **Date**: 2026-04-26
 **For**: 之前做 iOS app + web UI 的同一位設計師
 
+> **English summary:** Companion brief to `app_design_brief.md`, scoped specifically to two iOS-required visual assets — app icon and launch screen. Inherits product positioning, mood, and palette from the main brief; this document only adds delivery specs and asset-specific direction.
+
 > 這份是 [`app_design_brief.md`](app_design_brief.md) 的補件，專門處理 **app icon** 跟 **launch screen** 兩個 iOS 必要視覺資產。背景 / mood / 配色繼承上一份 brief，這裡只列規格與這次特定需求。
 
 ---
