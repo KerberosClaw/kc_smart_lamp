@@ -2,7 +2,7 @@
 
 **Status**: Accepted (sourcing pivoted to 蝦皮 2026-04-26)
 **Date**: 2026-04-26
-**Supersedes**: `docs/nanopi_research.md` 採購清單第一項「WS2812B LED strip 1m 60 LED 5V」
+**Supersedes**: 早期 NanoPi 路線採購清單第一項「WS2812B LED strip 1m 60 LED 5V」（見 [ADR 0004](0004-no-nanopi.md)）
 
 ## Context
 

@@ -50,7 +50,7 @@
 
 寫進 `docs/decisions/`（ADR 風格），主要決定：
 
-- 為何 ESP32 而非 NanoPi（見 `docs/nanopi_research.md`）
+- 為何 ESP32 而非 NanoPi（見 `docs/decisions/0004-no-nanopi.md`）
 - 為何 BLE GATT 而非 USB serial / WiFi
 - 為何 OpenSCAD 而非 Fusion 360
 - 為何 WS2812B 而非市售燈泡
