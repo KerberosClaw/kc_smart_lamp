@@ -88,8 +88,8 @@ Client read → 回傳**最後一次寫入的 5 bytes**。
 
 - Client scan advertised name `kc_smart_lamp`，預設 timeout 5 秒
 - Client connect via 標準 BLE GATT，無 bonding（Just Works）
-- Connection 維持期間：CLI 一次性命令連完即斷；Web server 啟動時連、關閉時斷
-- Reconnect 邏輯：v1 不做（連不上 → 報錯給 user），v1.1 加 retry / keep-alive
+- Connection 維持期間：CLI 一次性命令連完即斷；Web server 持續維持連線（背景 task auto-reconnect，詳 [ADR 0006](decisions/0006-reconnect-strategy.md)）
+- Reconnect 邏輯：CLI v1 不做（連不上 → 報錯給 user）；Web service v1.1 已補（exponential backoff 2s → 60s）
 
 ## Future characteristics（infrastructure-only，不為 feature 而加）
 
