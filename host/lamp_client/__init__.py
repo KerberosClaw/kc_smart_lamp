@@ -14,7 +14,7 @@ from .ble import (
 )
 from .color import NAMED_COLORS, parse_hex, parse_named, parse_rgb_args
 
-__version__ = "0.1.0"
+__version__ = "0.2.0"
 
 __all__ = [
     "DEVICE_NAME",

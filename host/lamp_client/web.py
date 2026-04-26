@@ -1,7 +1,12 @@
 """FastAPI web server: `smart-lamp-web` console script.
 
-Serves a color-picker UI on http://localhost:8080 by default; the
-single POST endpoint forwards user input to the lamp via `LampClient`.
+Endpoints:
+  POST /api/set_state    — full power/RGB/brightness control (UI uses this)
+  POST /api/lamp/on      — convenience: white at full brightness
+  POST /api/lamp/off     — convenience: power off
+
+The lamp connection runs in a background task with exponential backoff
+auto-reconnect — see ADR 0006.
 """
 
 from __future__ import annotations
@@ -23,9 +28,12 @@ from .ble import LampClient, LampNotFoundError, LampState
 
 LOGGER = logging.getLogger(__name__)
 
-# Module-level connected client + lock to serialize BLE writes across requests.
 _lamp: LampClient | None = None
 _lamp_lock = asyncio.Lock()
+
+_INITIAL_BACKOFF_SEC = 2.0
+_MAX_BACKOFF_SEC = 60.0
+_HEALTH_POLL_SEC = 1.0
 
 _STATIC_DIR = Path(__file__).resolve().parent / "static"
 
@@ -38,38 +46,87 @@ class StateRequest(BaseModel):
     brightness: int = Field(..., ge=0, le=100)
 
 
+async def _maintain_connection(shutdown: asyncio.Event) -> None:
+    global _lamp
+    backoff = _INITIAL_BACKOFF_SEC
+    while not shutdown.is_set():
+        try:
+            client = LampClient()
+            async with client:
+                _lamp = client
+                LOGGER.info("lamp connected")
+                backoff = _INITIAL_BACKOFF_SEC
+                while not shutdown.is_set() and client.is_connected:
+                    await asyncio.sleep(_HEALTH_POLL_SEC)
+                if not shutdown.is_set():
+                    LOGGER.warning("lamp disconnected")
+        except LampNotFoundError as e:
+            LOGGER.warning("scan failed: %s", e)
+        except Exception:
+            LOGGER.exception("connection error")
+        finally:
+            _lamp = None
+
+        if shutdown.is_set():
+            return
+
+        LOGGER.info("retrying in %.1fs ...", backoff)
+        try:
+            await asyncio.wait_for(shutdown.wait(), timeout=backoff)
+            return
+        except asyncio.TimeoutError:
+            pass
+        backoff = min(backoff * 2, _MAX_BACKOFF_SEC)
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    global _lamp
-    LOGGER.info("connecting to lamp ...")
+    shutdown = asyncio.Event()
+    task = asyncio.create_task(_maintain_connection(shutdown))
+    LOGGER.info("ready: http://%s:%s (lamp connection in background)", _host(), _port())
     try:
-        async with LampClient() as lamp:
-            _lamp = lamp
-            LOGGER.info("ready: http://%s:%s", _host(), _port())
-            yield
-    except LampNotFoundError as e:
-        LOGGER.error("startup failed: %s", e)
-        raise
+        yield
     finally:
-        _lamp = None
-        LOGGER.info("disconnected")
+        shutdown.set()
+        await task
+        LOGGER.info("shutdown complete")
 
 
-app = FastAPI(lifespan=lifespan, title="kc_smart_lamp", version="0.1.0")
+app = FastAPI(lifespan=lifespan, title="kc_smart_lamp", version="0.2.0")
+
+
+async def _apply(state: LampState) -> dict:
+    if _lamp is None:
+        raise HTTPException(status_code=503, detail="lamp not connected")
+    async with _lamp_lock:
+        await _lamp.set_state(state)
+    return {
+        "ok": True,
+        "state": {
+            "power": state.power,
+            "r": state.r,
+            "g": state.g,
+            "b": state.b,
+            "brightness": state.brightness,
+        },
+    }
 
 
 @app.post("/api/set_state")
 async def set_state(req: StateRequest) -> dict:
-    if _lamp is None:
-        raise HTTPException(status_code=503, detail="lamp not connected")
-    state = LampState(
-        power=req.power,
-        r=req.r, g=req.g, b=req.b,
-        brightness=req.brightness,
-    )
-    async with _lamp_lock:
-        await _lamp.set_state(state)
-    return {"ok": True, "state": req.model_dump()}
+    return await _apply(LampState(
+        power=req.power, r=req.r, g=req.g, b=req.b, brightness=req.brightness,
+    ))
+
+
+@app.post("/api/lamp/on")
+async def lamp_on() -> dict:
+    return await _apply(LampState(power=True, r=255, g=255, b=255, brightness=100))
+
+
+@app.post("/api/lamp/off")
+async def lamp_off() -> dict:
+    return await _apply(LampState(power=False, r=0, g=0, b=0, brightness=0))
 
 
 # Mount static last so /api/* takes precedence over file paths.

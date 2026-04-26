@@ -86,6 +86,10 @@ class LampClient:
             finally:
                 self._client = None
 
+    @property
+    def is_connected(self) -> bool:
+        return self._client is not None and self._client.is_connected
+
     def _require(self) -> BleakClient:
         if self._client is None or not self._client.is_connected:
             raise RuntimeError("not connected — wrap calls in 'async with'")
