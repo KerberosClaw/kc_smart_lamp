@@ -1,7 +1,7 @@
 # 智慧檯燈 — 沒 App、沒雲端、沒廠商鎖死的 BLE 桌燈
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![Platform: ESP32-C3](https://img.shields.io/badge/Platform-ESP32--C3-blue.svg)](https://www.espressif.com/en/products/socs/esp32-c3)
+[![Platform: ESP32-S3](https://img.shields.io/badge/Platform-ESP32--S3-blue.svg)](https://www.espressif.com/en/products/socs/esp32-s3)
 [![Protocol: BLE GATT](https://img.shields.io/badge/Protocol-BLE%20GATT-purple.svg)](https://www.bluetooth.com/specifications/gatt/)
 [![Status: WIP](https://img.shields.io/badge/Status-WIP-orange.svg)](#)
 
@@ -15,7 +15,7 @@
 
 ```
 +----------------+       BLE GATT          +-----------------+
-| Host (Mac/PC)  | <----- 讀寫 / 通知 ---> | ESP32-C3        |
+| Host (Mac/PC)  | <----- 讀寫 / 通知 ---> | ESP32-S3        |
 | Python `bleak` |                         | NimBLE-Arduino  |
 +----------------+                         | + FastLED       |
                                            +--------+--------+
@@ -28,7 +28,7 @@
 ```
 
 - **Host**：任何支援 BLE 的機器，script 寫 GATT 特徵值
-- **Device**：ESP32-C3 SuperMini 跑自寫韌體
+- **Device**：ESP32-S3-WROOM-1 N16R8 開發板跑自寫韌體
 - **LEDs**：WS2812B 可定址 RGB 燈條（5V，USB 供電）
 - **外殼**：3D 列印（OpenSCAD 建模），拓竹 A1 直接吃
 
@@ -44,9 +44,13 @@
 
 ```
 kc_smart_lamp/
-├── src/                      # ESP32 韌體 + host client
-├── tests/                    # 自動化測試（韌體 unit / host 整合）
-├── docs/                     # 設計文件、調研、電路圖
+├── firmware/                 # ESP32 韌體（PlatformIO project）
+├── host/                     # Python BLE client（bleak）
+├── hardware/                 # 3D 列印外殼（OpenSCAD .scad）+ 配線
+├── docs/                     # 設計文件、決策、bring-up plan
+│   ├── decisions/            # ADRs
+│   ├── dev_setup.md          # 開發環境 + bring-up milestones
+│   ├── procurement_guide.md  # 採購照唸腳本
 │   └── nanopi_research.md    # 替代平台調研
 ├── README.md                 # English
 ├── README_zh.md              # 本檔
@@ -55,6 +59,8 @@ kc_smart_lamp/
 ├── .gitignore
 └── .gitattributes
 ```
+
+三條 deliverable line 並行：**firmware**（ESP32 上的 C++）、**host**（Python `bleak` client）、**hardware**（OpenSCAD 外殼 + BOM），各自一個 top-level 目錄；`docs/` 跨三條線記錄決策與流程。
 
 ## 安全聲明
 

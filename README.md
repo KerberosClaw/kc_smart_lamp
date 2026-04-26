@@ -1,7 +1,7 @@
 # Smart Lamp — A BLE Desk Lamp with No App, No Cloud, No Vendor Lock
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![Platform: ESP32-C3](https://img.shields.io/badge/Platform-ESP32--C3-blue.svg)](https://www.espressif.com/en/products/socs/esp32-c3)
+[![Platform: ESP32-S3](https://img.shields.io/badge/Platform-ESP32--S3-blue.svg)](https://www.espressif.com/en/products/socs/esp32-s3)
 [![Protocol: BLE GATT](https://img.shields.io/badge/Protocol-BLE%20GATT-purple.svg)](https://www.bluetooth.com/specifications/gatt/)
 [![Status: WIP](https://img.shields.io/badge/Status-WIP-orange.svg)](#)
 
@@ -15,7 +15,7 @@ This project exists because every off-the-shelf BLE LED on the market today eith
 
 ```
 +----------------+       BLE GATT          +-----------------+
-| Host (Mac/PC)  | <---- write/notify ---> | ESP32-C3        |
+| Host (Mac/PC)  | <---- write/notify ---> | ESP32-S3        |
 | Python `bleak` |                         | NimBLE-Arduino  |
 +----------------+                         | + FastLED       |
                                            +--------+--------+
@@ -28,7 +28,7 @@ This project exists because every off-the-shelf BLE LED on the market today eith
 ```
 
 - **Host**: any machine with BLE — script writes to GATT characteristics
-- **Device**: ESP32-C3 SuperMini running custom firmware
+- **Device**: ESP32-S3-WROOM-1 N16R8 dev board running custom firmware
 - **LEDs**: WS2812B addressable RGB strip (5V, USB-powered)
 - **Enclosure**: 3D-printed shell (modeled in OpenSCAD), Bambu A1 ready
 
@@ -44,9 +44,13 @@ For now, see:
 
 ```
 kc_smart_lamp/
-├── src/                      # ESP32 firmware + host client
-├── tests/                    # Automated tests (firmware unit / host integration)
-├── docs/                     # Design docs, research, schematics
+├── firmware/                 # ESP32 firmware (PlatformIO project)
+├── host/                     # Python BLE client (bleak)
+├── hardware/                 # 3D-printed enclosure (OpenSCAD .scad) + wiring
+├── docs/                     # Design docs, decisions, bring-up plan
+│   ├── decisions/            # ADRs
+│   ├── dev_setup.md          # Dev environment + bring-up milestones
+│   ├── procurement_guide.md  # Shopping script for hardware
 │   └── nanopi_research.md    # Alternative platform investigation
 ├── README.md                 # This file
 ├── README_zh.md              # 正體中文版
@@ -55,6 +59,8 @@ kc_smart_lamp/
 ├── .gitignore
 └── .gitattributes
 ```
+
+Three deliverable lines run in parallel: **firmware** (C++ on ESP32), **host** (Python `bleak` client), **hardware** (OpenSCAD enclosure + BOM). Each lives at its own top-level directory; `docs/` documents decisions and procedures across all three.
 
 ## Security Notice
 
