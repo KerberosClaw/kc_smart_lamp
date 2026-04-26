@@ -33,11 +33,11 @@ flowchart LR
 ### Working demo
 
 <p align="center">
-  <img src="docs/images/demo_ios.jpg" width="280" alt="iOS app: HSV color wheel set to green at 29% brightness, connected to kc_smart_lamp" />
+  <img src="docs/images/demo_hw.jpg" width="500" alt="ESP32-S3 dev board with onboard RGB LED responding green" />
 </p>
 
 <p align="center">
-  <img src="docs/images/demo_hw.jpg" width="500" alt="ESP32-S3 dev board with onboard RGB LED responding green" />
+  <img src="docs/images/demo_ios.jpg" width="280" alt="iOS app: HSV color wheel set to green at 29% brightness, connected to kc_smart_lamp" />
 </p>
 
 <p align="center"><sub>iOS app writes color over BLE GATT → ESP32-S3 onboard LED responds in real time. External Ring is the next bring-up step; the protocol is the same.</sub></p>
