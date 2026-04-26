@@ -13,18 +13,21 @@ This started as a "I just want a lamp that doesn't take an app" rant. Two weeks 
 
 ## Architecture
 
-```
-+----------------+       BLE GATT          +-----------------+
-| Host (Mac/PC)  | <---- write/notify ---> | ESP32-S3        |
-| Python `bleak` |                         | NimBLE-Arduino  |
-+----------------+                         | + FastLED       |
-                                           +--------+--------+
-                                                    |
-                                                    | data
-                                                    v
-                                            +---------------+
-                                            | WS2812B LEDs  |
-                                            +---------------+
+```mermaid
+flowchart LR
+    subgraph Clients
+        Host[Host Mac/PC<br/>Python bleak<br/>CLI + Web]
+        iOS[iOS App<br/>SwiftUI + CoreBluetooth]
+    end
+
+    subgraph Device
+        ESP[ESP32-S3<br/>NimBLE-Arduino<br/>+ FastLED]
+        LED[WS2812B 8-LED Ring]
+    end
+
+    Host -->|BLE GATT<br/>write/notify| ESP
+    iOS -->|BLE GATT<br/>write/notify| ESP
+    ESP -->|data| LED
 ```
 
 - **Host**: any machine with BLE — script writes to GATT characteristics
@@ -114,7 +117,3 @@ Four deliverable lines run in parallel: **firmware** (C++ on ESP32), **host** (P
 ## License
 
 MIT — see [LICENSE](LICENSE).
-
-## Status
-
-Work in progress — hardware procured 2026-04-26, firmware bring-up underway, half a dozen ADRs already arguing with past decisions. Star or watch to follow the milestones (and the inevitable "well that didn't work" pivots).

@@ -13,18 +13,21 @@
 
 ## 架構
 
-```
-+----------------+       BLE GATT          +-----------------+
-| Host (Mac/PC)  | <----- 讀寫 / 通知 ---> | ESP32-S3        |
-| Python `bleak` |                         | NimBLE-Arduino  |
-+----------------+                         | + FastLED       |
-                                           +--------+--------+
-                                                    |
-                                                    | 數據
-                                                    v
-                                            +---------------+
-                                            | WS2812B LEDs  |
-                                            +---------------+
+```mermaid
+flowchart LR
+    subgraph Clients
+        Host[Host Mac/PC<br/>Python bleak<br/>CLI + Web]
+        iOS[iOS App<br/>SwiftUI + CoreBluetooth]
+    end
+
+    subgraph Device
+        ESP[ESP32-S3<br/>NimBLE-Arduino<br/>+ FastLED]
+        LED[WS2812B 8-LED Ring]
+    end
+
+    Host -->|BLE GATT<br/>讀寫 / 通知| ESP
+    iOS -->|BLE GATT<br/>讀寫 / 通知| ESP
+    ESP -->|數據| LED
 ```
 
 - **Host**：任何支援 BLE 的機器，script 寫 GATT 特徵值
@@ -114,7 +117,3 @@ kc_smart_lamp/
 ## License
 
 MIT — 見 [LICENSE](LICENSE)。
-
-## Status
-
-Work in progress — 硬體 2026-04-26 採購完成、韌體 bring-up 進行中、`docs/decisions/` 裡已經有半打 ADR 在跟過去的決定吵架。Star / Watch 追蹤進度（順便看「結果這條路不通」的 pivot）。
