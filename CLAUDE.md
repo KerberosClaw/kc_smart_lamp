@@ -4,7 +4,8 @@
 
 **This repo covers**：
 - ESP32 firmware（NimBLE GATT service + FastLED 驅動 WS2812B）
-- Host BLE client（Python `bleak` 寫 GATT characteristics）
+- Host BLE client（Python `bleak` 寫 GATT characteristics — CLI + FastAPI Web UI）
+- iOS app（SwiftUI + CoreBluetooth 控 BLE GATT — 設計概念見 `docs/app_design_brief.md`）
 - Custom GATT service / characteristic spec
 - 3D-printed enclosure（OpenSCAD `.scad` source）
 - Hardware BOM、配線圖、組裝 SOP
@@ -17,7 +18,7 @@
 
 ## Coding Convention
 
-- 開發語言：Embedded C/C++（firmware）+ Python 3.12+（host）+ OpenSCAD（CAD）
+- 開發語言：Embedded C/C++（firmware）+ Python 3.12+（host）+ Swift 5+ / SwiftUI（iOS）+ OpenSCAD（CAD）
 - 註解 / 文件 / commit message：以英文為主（CLAUDE.md / README_zh.md / docs 中文 OK）
 - snake_case 命名；不用駝峰
 - Firmware 不用 Arduino IDE → PlatformIO（reproducible build）

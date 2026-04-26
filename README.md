@@ -83,11 +83,13 @@ See [docs/dev_setup.md](docs/dev_setup.md) for download-mode quirks, factory fir
 ```
 kc_smart_lamp/
 ├── firmware/                 # ESP32 firmware (PlatformIO project)
-├── host/                     # Python BLE client (bleak)
+├── host/                     # Python BLE client (bleak) — CLI + Web UI
+├── ios/                      # iOS app (SwiftUI + CoreBluetooth) — pending
 ├── hardware/                 # 3D-printed enclosure (OpenSCAD .scad) + wiring
 ├── docs/                     # Design docs, decisions, bring-up plan
 │   ├── decisions/            # ADRs
 │   ├── gatt_spec.md          # BLE GATT service / characteristic spec
+│   ├── app_design_brief.md   # iOS app design direction
 │   ├── dev_setup.md          # Dev environment + bring-up milestones
 │   ├── procurement_guide.md  # Shopping script for hardware
 │   └── nanopi_research.md    # Alternative platform investigation
@@ -99,7 +101,7 @@ kc_smart_lamp/
 └── .gitattributes
 ```
 
-Three deliverable lines run in parallel: **firmware** (C++ on ESP32), **host** (Python `bleak` client), **hardware** (OpenSCAD enclosure + BOM). Each lives at its own top-level directory; `docs/` documents decisions and procedures across all three.
+Four deliverable lines run in parallel: **firmware** (C++ on ESP32), **host** (Python `bleak` client — CLI + Web), **ios** (SwiftUI + CoreBluetooth app), **hardware** (OpenSCAD enclosure + BOM). Each lives at its own top-level directory; `docs/` documents decisions and procedures across all four.
 
 ## Security Notice
 

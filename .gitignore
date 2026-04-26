@@ -28,6 +28,17 @@ dist/
 .vscode/
 .idea/
 
+# Xcode / iOS
+*.xcuserstate
+*.xcuserdata
+xcuserdata/
+*.xcworkspace/xcuserdata/
+DerivedData/
+*.dSYM/
+*.app
+*.ipa
+*.xcarchive
+
 # Local config / credentials
 .env
 .env.local

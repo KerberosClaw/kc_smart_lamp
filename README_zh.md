@@ -83,11 +83,13 @@ pio device monitor         # 看 boot log（115200 baud）
 ```
 kc_smart_lamp/
 ├── firmware/                 # ESP32 韌體（PlatformIO project）
-├── host/                     # Python BLE client（bleak）
+├── host/                     # Python BLE client（bleak）— CLI + Web UI
+├── ios/                      # iOS app（SwiftUI + CoreBluetooth）— 待開發
 ├── hardware/                 # 3D 列印外殼（OpenSCAD .scad）+ 配線
 ├── docs/                     # 設計文件、決策、bring-up plan
 │   ├── decisions/            # ADRs
 │   ├── gatt_spec.md          # BLE GATT service / characteristic 規格
+│   ├── app_design_brief.md   # iOS app 設計方向
 │   ├── dev_setup.md          # 開發環境 + bring-up milestones
 │   ├── procurement_guide.md  # 採購照唸腳本
 │   └── nanopi_research.md    # 替代平台調研
@@ -99,7 +101,7 @@ kc_smart_lamp/
 └── .gitattributes
 ```
 
-三條 deliverable line 並行：**firmware**（ESP32 上的 C++）、**host**（Python `bleak` client）、**hardware**（OpenSCAD 外殼 + BOM），各自一個 top-level 目錄；`docs/` 跨三條線記錄決策與流程。
+四條 deliverable line 並行：**firmware**（ESP32 上的 C++）、**host**（Python `bleak` client — CLI + Web）、**ios**（SwiftUI + CoreBluetooth app）、**hardware**（OpenSCAD 外殼 + BOM），各自一個 top-level 目錄；`docs/` 跨四條線記錄決策與流程。
 
 ## 安全聲明
 
