@@ -9,6 +9,7 @@ struct LampScreen: View {
 
     @State private var connection: ConnectionState = .scanning
     @State private var activePreset: Preset.ID? = nil
+    @State private var autoApplyTask: Task<Void, Never>? = nil
 
     var body: some View {
         ZStack {
@@ -124,13 +125,6 @@ struct LampScreen: View {
 
             Spacer(minLength: 0)
 
-            // apply CTA
-            ApplyButton(accent: lamp.accentColor) {
-                Task { try? await ble.write(lamp.payload()) }
-            }
-            .opacity(lamp.power ? 1 : 0.45)
-            .padding(.bottom, 12)
-
             // power toggle
             PowerToggleRow(
                 isOn: Binding(get: { lamp.power }, set: { lamp.power = $0 }),
@@ -142,9 +136,31 @@ struct LampScreen: View {
         .task {
             await initialConnect()
         }
+        // Continuous inputs (wheel / slider) → debounced auto-apply.
+        .onChange(of: lamp.hue)        { scheduleAutoApply() }
+        .onChange(of: lamp.saturation) { scheduleAutoApply() }
+        .onChange(of: lamp.brightness) { scheduleAutoApply() }
+        // Power is a discrete action — bypass debounce, fire immediately.
+        .onChange(of: lamp.power) {
+            autoApplyTask?.cancel()
+            Task { try? await ble.write(lamp.payload()) }
+        }
     }
 
     // MARK: - Actions
+
+    /// Continuous inputs (wheel / slider) call this on every change.
+    /// Last call within the window wins, so the BLE write only fires once
+    /// after the user stops moving.  Power and presets bypass this and
+    /// call `ble.write` directly.
+    private func scheduleAutoApply(delay: Duration = .milliseconds(220)) {
+        autoApplyTask?.cancel()
+        autoApplyTask = Task {
+            try? await Task.sleep(for: delay)
+            guard !Task.isCancelled else { return }
+            try? await ble.write(lamp.payload())
+        }
+    }
 
     private func applyPreset(_ p: Preset) {
         withAnimation(LampMetrics.spring) {
@@ -159,7 +175,8 @@ struct LampScreen: View {
                 lamp.brightness = bri
             }
         }
-        // presets auto-apply (skip Apply button per brief 6.1)
+        // presets bypass the debounce — fire immediately
+        autoApplyTask?.cancel()
         Task { try? await ble.write(lamp.payload()) }
     }
 
