@@ -1,6 +1,6 @@
 # Dev Setup & Bring-up Plan
 
-> **English summary:** Mac mini macOS development setup using PlatformIO + VSCode for ESP32-S3-WROOM-1 N16R8. Hardware procured 2026-04-26 from JinHua Electronics (光華商場); WS2812B 8-LED ring pending Shopee shipment. Bring-up plan in 6 milestones: hardware power-on → BLE advertise → GATT service → on-board LED driver → external Ring driver → end-to-end host BLE write. The dev board's on-board WS2812 RGB LED lets us validate the full BLE → FastLED → LED chain before the external Ring arrives.
+> **English summary:** MacBook Pro (macOS, Apple Silicon) development setup using PlatformIO + VSCode for ESP32-S3-WROOM-1 N16R8. Hardware procured 2026-04-26 from JinHua Electronics (光華商場); WS2812B 8-LED ring pending Shopee shipment. Bring-up plan in 6 milestones: hardware power-on → BLE advertise → GATT service → on-board LED driver → external Ring driver → end-to-end host BLE write. The dev board's on-board WS2812 RGB LED lets us validate the full BLE → FastLED → LED chain before the external Ring arrives.
 
 ---
 
