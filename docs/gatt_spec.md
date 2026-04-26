@@ -89,13 +89,15 @@ Client read → 回傳**最後一次寫入的 5 bytes**。
 - Connection 維持期間：CLI 一次性命令連完即斷；Web server 啟動時連、關閉時斷
 - Reconnect 邏輯：v1 不做（連不上 → 報錯給 user），v1.1 加 retry / keep-alive
 
-## Future characteristics（不在 v1 scope）
+## Future characteristics（infrastructure-only，不為 feature 而加）
 
-| 候選 | 用途 |
-|---|---|
-| `LAMP_INFO` (read) | firmware version / MAC / hw rev |
-| `EFFECT_MODE` (write) | breathing / fade / pulse 等預設效果 |
-| `SCHEDULE` (write) | on/off 定時 |
-| `OTA_TRIGGER` (write) | 觸發 OTA 韌體更新 |
+依 [ADR 0003 — Thin-client architecture](decisions/0003-thin-client-architecture.md)，**feature 邏輯（effects / scenes / schedules / 動畫等）永遠在 host 上實作，不上 firmware**。所以原本列為 future 的 `EFFECT_MODE` / `SCHEDULE` 已從本 list 移除 — 它們不是「之後做」，而是「不會做」。
+
+剩兩個 future characteristics 都是 infrastructure，不是 feature：
+
+| 候選 | 用途 | 為何不算 feature |
+|---|---|---|
+| `LAMP_INFO` (read) | firmware version / MAC / hw rev | 純 metadata，host 端 debug / 識別用 |
+| `OTA_TRIGGER` (write) | 觸發 OTA 韌體更新 | 維護用，不是 user-facing 功能 |
 
 加在同 service 下面，不破壞 v1 client 兼容性。

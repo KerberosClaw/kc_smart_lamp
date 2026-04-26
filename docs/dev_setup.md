@@ -101,7 +101,7 @@ ESP-IDF 太重，POC 用不到。Arduino IDE 適合 quick demo 但 project 結�
 
 ## Bring-up Milestones
 
-### M1: Hardware power-on（不接 LED 不裝環境也能做）
+### M1: Hardware power-on（不接 LED 不裝環境也能做） ✅ Validated 2026-04-26
 
 - USB-C 線接 ESP32 ↔ Mac mini（**直插主機，不要過 hub**）
 - **觀察板上 LED**：紅色電源 LED 應常亮；boot 期間可能有藍/紫 LED 閃
@@ -110,7 +110,9 @@ ESP-IDF 太重，POC 用不到。Arduino IDE 適合 quick demo 但 project 結�
 
 **Exit criteria**：`ls /dev/cu.usbmodem*` 看到 device。
 
-### M2: BLE advertise demo
+### M2: BLE advertise demo ✅ Validated 2026-04-26
+
+**驗證紀錄**：燒錄完手動按 RST 後，板載 LED 跑 R/G/B boot self-test → BLE 開始 advertise。`bleak.BleakScanner.find_device_by_name('kc_smart_lamp')` 在 5 秒內找到 device。iPhone nRF Connect 同樣掃得到。
 
 - PlatformIO 建 `firmware/` project（Board: ESP32-S3-DevKitC-1，Framework: Arduino）
 - 燒一個 minimal NimBLE-Arduino BLE advertiser（device name `kc_smart_lamp`）
@@ -118,7 +120,9 @@ ESP-IDF 太重，POC 用不到。Arduino IDE 適合 quick demo 但 project 結�
 
 **Exit criteria**：手機 BLE scanner 掃到自定 device name。
 
-### M3: GATT service + write characteristic
+### M3: GATT service + write characteristic ✅ Validated 2026-04-26
+
+**驗證紀錄**：三個 client 並行驗證寫入 `LAMP_STATE` 都 work — (1) `smart-lamp --hex FF0000 --brightness 50 --on` CLI、(2) FastAPI Web UI 色盤 + slider + Apply、(3) iPhone nRF Connect hex write `01ff000032`。三者寫進去 LED 都正確顯示對應顏色 / 亮度。
 
 GATT spec 已正式化在 [docs/gatt_spec.md](gatt_spec.md) — 單一 service + 單一 5-byte `LAMP_STATE` characteristic（power/RGB/brightness 原子寫入）。
 
@@ -135,7 +139,9 @@ GATT spec 已正式化在 [docs/gatt_spec.md](gatt_spec.md) — 單一 service +
 - CLI / Web 還沒暴露這個指令；要時再 wire 約 10 行 code
 - Use cases + 對應改動見 [gatt_spec.md → "Future: client-side status command"](gatt_spec.md)
 
-### M4a: 板載 LED 驗證 FastLED + GATT chain（不等 Ring 到貨也能做）
+### M4a: 板載 LED 驗證 FastLED + GATT chain（不等 Ring 到貨也能做） ✅ Validated 2026-04-26
+
+**驗證紀錄**：板載 WS2812 LED 在 GPIO 48（platformio.ini `LAMP_LED_PIN=48`），boot self-test 紅 → 綠 → 藍 → 熄滅順利執行；BLE write 後 LED 色 / 亮度即時反應。**這顆 S3-WROOM-1 N16R8 仿板的 on-board LED 確實在 GPIO 48**，跟官方 ESP32-S3-DevKitC-1 一致，沒踩到 38 / 47 變體。
 
 板子有內建一顆 WS2812 RGB LED（出廠 firmware 跑彩色循環的就是它），協定跟外接 Ring 完全一樣 — 拿來先把 BLE → FastLED → WS2812 整條鏈路驗起來，**Ring 到貨前 2-3 天可以先把 firmware 寫完**。
 
