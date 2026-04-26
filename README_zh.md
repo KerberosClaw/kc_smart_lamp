@@ -30,6 +30,15 @@ flowchart LR
     ESP -->|數據| LED
 ```
 
+### 實機 demo
+
+<p align="center">
+  <img src="docs/images/demo_ios.jpg" width="45%" alt="iOS app：HSV 色盤選綠色、29% 亮度，已連線到 kc_smart_lamp" />
+  <img src="docs/images/demo_hw.jpg" width="45%" alt="ESP32-S3 開發板板載 RGB LED 同步亮綠" />
+</p>
+
+<p align="center"><sub>iOS app 透過 BLE GATT 寫顏色 → ESP32-S3 板載 LED 即時響應。外接 Ring 是下一個 bring-up step；協議相同。</sub></p>
+
 - **Host**：任何支援 BLE 的機器，script 寫 GATT 特徵值
 - **Device**：ESP32-S3-WROOM-1 N16R8 開發板跑自寫韌體
 - **LEDs**：WS2812B 可定址 RGB 燈條（5V，USB 供電）

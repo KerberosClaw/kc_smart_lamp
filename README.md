@@ -30,6 +30,15 @@ flowchart LR
     ESP -->|data| LED
 ```
 
+### Working demo
+
+<p align="center">
+  <img src="docs/images/demo_ios.jpg" width="45%" alt="iOS app: HSV color wheel set to green at 29% brightness, connected to kc_smart_lamp" />
+  <img src="docs/images/demo_hw.jpg" width="45%" alt="ESP32-S3 dev board with onboard RGB LED responding green" />
+</p>
+
+<p align="center"><sub>iOS app writes color over BLE GATT → ESP32-S3 onboard LED responds in real time. External Ring is the next bring-up step; the protocol is the same.</sub></p>
+
 - **Host**: any machine with BLE — script writes to GATT characteristics
 - **Device**: ESP32-S3-WROOM-1 N16R8 dev board running custom firmware
 - **LEDs**: WS2812B addressable RGB strip (5V, USB-powered)
