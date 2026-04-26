@@ -7,9 +7,9 @@
 
 [正體中文](README_zh.md)
 
-A self-built USB-powered desk lamp controlled directly over Bluetooth Low Energy. No cloud account, no proprietary mobile app, no firmware update breaking your setup. The GATT service is documented in this repo, the firmware is open source, and the controller is just a Python script.
+A USB-powered desk lamp that talks Bluetooth, lives off your local machine, and refuses to phone home. The GATT service is in this repo, the firmware is open source, the controller is just a Python script — no cloud account, no vendor app, no surprise firmware update bricking your night light.
 
-This project exists because every off-the-shelf BLE LED on the market today either (a) requires a vendor app, (b) hides its protocol behind reverse-engineering work, or (c) is WiFi-first. None of them satisfied "USB-powered + open BLE protocol + no app" all at once. So I'm building one.
+This started as a "I just want a lamp that doesn't take an app" rant. Two weeks later it was firmware + Python CLI + Web UI + iOS app, because every BLE smart lamp on the shelf today either (a) demands a vendor app, (b) hides its protocol behind community reverse-engineering, or (c) is WiFi-first. None satisfied "USB-powered + open BLE + no app" all at once. So here we are.
 
 ## Architecture
 
@@ -117,4 +117,4 @@ MIT — see [LICENSE](LICENSE).
 
 ## Status
 
-Work in progress. Hardware procurement and firmware bring-up underway. Star or watch the repo to follow milestones.
+Work in progress — hardware procured 2026-04-26, firmware bring-up underway, half a dozen ADRs already arguing with past decisions. Star or watch to follow the milestones (and the inevitable "well that didn't work" pivots).

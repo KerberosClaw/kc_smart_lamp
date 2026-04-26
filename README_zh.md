@@ -7,9 +7,9 @@
 
 [English](README.md)
 
-一盞自製、USB 供電、直接走 Bluetooth Low Energy 控制的桌燈。不用雲端帳號、不裝廠商 App、不會被 firmware 更新搞壞。GATT service 規格寫在這個 repo 裡、韌體開源、控制端就是一支 Python script。
+一盞 USB 供電、走 Bluetooth、不對外通訊的桌燈。GATT 規格寫在這個 repo 裡、韌體開源、控制端就是一支 Python script — 不用雲端帳號、不裝廠商 App、不會哪天 firmware 更新給你變磚。
 
-這個專案存在的原因是：市售 BLE 智能燈泡 100% 落入下面三類之一 — (a) 必須裝廠商 App、(b) 協議只能靠社群逆向、(c) 是 WiFi 優先而非 BLE。沒有任何一款同時滿足「USB 供電 + BLE 協議公開 + 不綁 App」。沒有就自己做。
+起點是「我只是想要一盞燈，不要叫我裝 App」。兩週後變成 firmware + Python CLI + Web UI + iOS app，因為市售 BLE 智能燈泡 100% 落入下面三類之一：(a) 必須裝廠商 App、(b) 協議靠社群逆向、(c) 是 WiFi 優先而非 BLE。沒有任何一款同時滿足「USB 供電 + BLE 協議公開 + 不綁 App」。沒有就自己做。
 
 ## 架構
 
@@ -117,4 +117,4 @@ MIT — 見 [LICENSE](LICENSE)。
 
 ## Status
 
-Work in progress。硬體採購 + 韌體 bring-up 進行中。Star / Watch repo 追蹤進度。
+Work in progress — 硬體 2026-04-26 採購完成、韌體 bring-up 進行中、`docs/decisions/` 裡已經有半打 ADR 在跟過去的決定吵架。Star / Watch 追蹤進度（順便看「結果這條路不通」的 pivot）。
